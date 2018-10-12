@@ -1,6 +1,9 @@
 {
   "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
   "rules": {
+    "interface-over-type-literal": false,
+    "member-access": false,
+    "array-type": [true, "array"],
     "quotemark": [true, "single", "jsx-double"],
     "trailing-comma": [
       true,
