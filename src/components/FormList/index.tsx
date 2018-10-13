@@ -1,7 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import { FormListItem } from '../types';
-import FormCard, { CARD_WIDTH_PX } from './FormCard';
+
+import { FormListItem } from 'components/types';
+import FormCard, { CARD_WIDTH_PX } from 'components/FormList/FormCard';
+
 
 const GridView = styled.section`
   display: grid;
@@ -21,15 +23,17 @@ const GridView = styled.section`
 type FormListProps = {
   list: FormListItem[];
   onPreview(item: FormListItem): void;
+  onDelete(item: FormListItem): void;
 };
 
 class FormList extends React.PureComponent<FormListProps> {
   render() {
     return (
       <GridView>
-        {this.props.list.map((item, i) => (
+        {this.props.list.map((item) => (
           <FormCard
             onPreview={this.props.onPreview}
+            onDelete={this.props.onDelete}
             key={item.schemaId}
             item={item}
           />

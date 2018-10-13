@@ -1,8 +1,9 @@
-import { Card, Icon } from 'antd';
-import { Meta } from 'antd/lib/list/Item';
-import { FormListItem } from 'components/types';
 import React from 'react';
 import styled from 'styled-components';
+import { Card, Icon } from 'antd';
+import { Meta } from 'antd/lib/list/Item';
+
+import { FormListItem } from 'components/types';
 
 export const CARD_WIDTH_PX = 300;
 
@@ -20,26 +21,41 @@ const StyledCard = styled(Card)`
 type FormCardProps = {
   item: FormListItem;
   onPreview(item: FormListItem): void;
+  onDelete(item: FormListItem): void;
 };
 
 class FormCard extends React.PureComponent<FormCardProps> {
+  actions: React.ReactNode[] = [];
+
+  constructor(props: FormCardProps) {
+    super(props);
+
+    this.actions = [
+      <Icon key={0} onClick={this.handleFormPreview} type="search" />,
+      <Icon key={1} onClick={this.handleFormIdit} type="edit" />,
+      <Icon key={2} onClick={this.handleFormDelete} type="delete" />,
+    ];
+  }
+
   handleFormPreview = () => {
     this.props.onPreview(this.props.item);
   }
-  // handleFormIdit = () => {}
-  // handleFormDelete = () => {}
+
+  handleFormDelete = () => {
+    this.props.onDelete(this.props.item);
+  }
+
+  handleFormIdit = () => {
+    console.log('edit');
+  }
   render() {
     return (
       <StyledCard
-        actions={[
-          <Icon key={0} onClick={this.handleFormPreview} type="search" />,
-          <Icon key={1} type="edit" />,
-          <Icon key={2} type="delete" />,
-        ]}
+        actions={this.actions}
       >
         <Meta
           title={this.props.item.name}
-          // description="This is the description"
+          description={this.props.item.description}
         />
       </StyledCard>
     );

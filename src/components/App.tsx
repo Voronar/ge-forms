@@ -1,8 +1,10 @@
-import { Modal } from 'antd';
-import UserForms from 'components/FormList';
 import React from 'react';
 import styled from 'styled-components';
-import { AppState, FormListItem, initialFormList, initialFormSchemas } from './types';
+
+import FormViewer from 'components/Form/Viewer';
+import UserForms from 'components/FormList';
+import { AppState, initialFormList, initialFormSchemas, FormListItem } from 'components/types';
+
 
 const StyledApp = styled.div`
   display: flex;
@@ -27,18 +29,27 @@ class App extends React.PureComponent<{}, AppState> {
     this.setState({ formToPreview: null });
   }
 
+  handleFormDelete = (form: FormListItem) => {
+    this.setState({
+      formList: this.state.formList.filter(item => item.id !== form.id),
+    });
+  }
+
   render() {
-    const { formToPreview } = this.state;
+    const { formToPreview, formSchemas } = this.state;
 
     return (
       <StyledApp>
         <UserForms
           list={this.state.formList}
           onPreview={this.handleFormPreviewOpen}
+          onDelete={this.handleFormDelete}
         />
-        <Modal onCancel={this.handleFormPreviewClose} visible={formToPreview !== null}>
-          {formToPreview && formToPreview.name}
-        </Modal>
+        <FormViewer
+          onClose={this.handleFormPreviewClose}
+          formToPreview={formToPreview}
+          formSchema={formToPreview && formSchemas[formToPreview.schemaId]}
+        />
       </StyledApp>
     );
   }
