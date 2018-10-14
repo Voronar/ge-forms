@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { FormListItem } from 'components/types';
 import FormCard, { CARD_WIDTH_PX } from './FormCard';
 import { boxShadow1, spacing } from 'components/theme';
+import { FormListItem } from 'components/Form/types';
 
 
 const GridView = styled.section`

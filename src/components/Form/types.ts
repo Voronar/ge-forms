@@ -15,7 +15,7 @@ export type BaseInputSchema = {
 export type SelectInputSchema = BaseInputSchema & {
   type: 'select',
   multiple?: boolean;
-  selectOptions: Option[];
+  options: Option[];
 };
 
 export type StringInputSchema = BaseInputSchema & {
@@ -32,7 +32,7 @@ export type FileInputSchema = BaseInputSchema & {
 
 export type RadioGroupInputSchema = Omit<BaseInputSchema, 'required'> & {
   type: 'radiogroup',
-  groupOptions: Option[];
+  options: Option[];
 };
 
 export type CheckboxInputSchema = Omit<BaseInputSchema, 'required'> & {
@@ -56,4 +56,19 @@ export type InputSchema =
 export type FormSchema = {
   id: string;
   inputs: InputSchema[];
+};
+
+export type BaseFormInfo = {
+  name: 'name';
+  description: 'description';
+};
+
+export type FormListItem = {
+  id: string;
+  schemaId: string;
+} & Record<keyof BaseFormInfo, string>;
+
+export type FormInfo = {
+  data: FormListItem;
+  meta: FormSchema;
 };

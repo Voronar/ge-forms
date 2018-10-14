@@ -5,8 +5,7 @@ import { FormComponentProps } from 'antd/lib/form';
 import TextArea from 'antd/lib/input/TextArea';
 import RadioGroup from 'antd/lib/radio/group';
 
-import { BaseInputSchema, FormSchema, InputSchema } from 'components/Form/types';
-import { FormListItem } from 'components/types';
+import { BaseInputSchema, InputSchema, FormInfo } from 'components/Form/types';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -14,8 +13,7 @@ const Option = Select.Option;
 const StyledFormViewer = styled.div``;
 
 type FormViewerProps = {
-  formToPreview: FormListItem | null;
-  formSchema: FormSchema | null;
+  formToPreview: FormInfo | null;
   onClose(): void;
 } & FormComponentProps;
 
@@ -40,11 +38,11 @@ class FormViewer extends React.PureComponent<FormViewerProps> {
     );
   }
   renderInputs() {
-    if (this.props.formSchema === null) {
+    if (this.props.formToPreview === null) {
       return null;
     }
 
-    return this.props.formSchema.inputs.map((input) => {
+    return this.props.formToPreview.meta.inputs.map((input) => {
       switch(input.type) {
         case 'number':
           return this.getDefaultFormItem(input, <Input type="number"/>);
@@ -58,7 +56,7 @@ class FormViewer extends React.PureComponent<FormViewerProps> {
         case 'radiogroup':
           return this.getDefaultFormItem(input,
             <RadioGroup>
-              {input.groupOptions.map(option => (
+              {input.options.map(option => (
                 <Radio key={option.id} value={option.value}>{option.label}</Radio>
               ))}
             </RadioGroup>,
@@ -80,7 +78,7 @@ class FormViewer extends React.PureComponent<FormViewerProps> {
         case 'select':
           return this.getDefaultFormItem(input,
             <Select allowClear={true} mode={input.multiple ? 'multiple' : 'default'}>
-              {input.selectOptions.map(option => (
+              {input.options.map(option => (
                 <Option key={option.id} value={option.value}>{option.label}</Option>
               ))}
             </Select>,
@@ -92,7 +90,7 @@ class FormViewer extends React.PureComponent<FormViewerProps> {
   }
 
   render() {
-    const { formToPreview, formSchema } = this.props;
+    const { formToPreview } = this.props;
 
     const inputs = this.renderInputs();
 
@@ -102,8 +100,8 @@ class FormViewer extends React.PureComponent<FormViewerProps> {
         width="50%"
         destroyOnClose={true}
         onCancel={this.props.onClose}
-        title={formToPreview && formToPreview.name + ' preview'}
-        visible={![formToPreview, formSchema].includes(null)}
+        title={formToPreview && formToPreview.data.name + ' preview'}
+        visible={formToPreview !== null}
         footer=""
       >
         <StyledFormViewer>

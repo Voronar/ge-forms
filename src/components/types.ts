@@ -1,14 +1,5 @@
-import { FormSchema } from 'components/Form/types';
+import { FormSchema, FormListItem } from 'components/Form/types';
 
-export type BaseFormInfo = {
-  name: 'name';
-  description: 'description';
-};
-
-export type FormListItem = {
-  id: string;
-  schemaId: string;
-} & Record<keyof BaseFormInfo, string>;
 
 export type AppState = {
   formList: FormListItem[];
@@ -27,13 +18,13 @@ export const initialFormSchemas: Record<string, FormSchema> = {
       { id: 'id3',
         required: true,
         type: 'select',
-        selectOptions: [{ id: '1', label: 'option1', value: 1 }],
+        options: [{ id: '1', label: 'option1', value: 1 }],
         label: 'field3',
       },
       { id: 'id4', required: true, type: 'textarea', label: 'field4' },
       { id: 'id5',
         type: 'radiogroup',
-        groupOptions: [
+        options: [
           { id: 'id1', label: 'option1', value: 1 },
           { id: 'id2', label: 'option2', value: 2 },
         ],

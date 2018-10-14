@@ -3,9 +3,9 @@ import styled from 'styled-components';
 
 import FormViewer from 'components/Form/Viewer';
 import UserForms from 'components/Form/List';
-import { AppState, initialFormList, initialFormSchemas, FormListItem } from 'components/types';
+import { AppState, initialFormList, initialFormSchemas } from 'components/types';
 import FormEditor from './Form/Editor';
-import { FormSchema } from './Form/types';
+import { FormInfo, FormListItem } from './Form/types';
 import ActionBar from './ActionBar';
 
 
@@ -24,7 +24,7 @@ class App extends React.PureComponent<{}, AppState> {
     formToPreview: null,
     formToEdit: null,
     newForm: false,
-  }
+  };
 
   handleNewForm = (state: boolean = true) => this.setState({ newForm: state });
   handleFormPreviewOpen = (formItem: FormListItem) => this.setState({ formToPreview: formItem });
@@ -45,12 +45,33 @@ class App extends React.PureComponent<{}, AppState> {
     });
   }
 
-  handleFormSave = (upcomingSchema: FormSchema, upcomingForm: FormListItem) => {
+  handleFormSave = (updatedForm: FormInfo) => {
     console.log('save');
+    
+    // TODO проверка на новую запись
+    this.setState({
+      formList: [...this.state.formList, updatedForm.data],
+      formSchemas: {
+        ...this.state.formSchemas,
+        [updatedForm.meta.id]: updatedForm.meta,
+      },
+      formToEdit: null,
+      newForm: false,
+    });
   }
 
   render() {
-    const { formToPreview, formSchemas, formToEdit } = this.state;
+    const { formSchemas } = this.state;
+
+    const formToEdit: FormInfo | null = this.state.formToEdit && formSchemas[this.state.formToEdit.schemaId] && {
+      data: this.state.formToEdit,
+      meta: formSchemas[this.state.formToEdit.schemaId],
+    };
+
+    const formToPreview: FormInfo | null = this.state.formToPreview && formSchemas[this.state.formToPreview.schemaId] && {
+      data: this.state.formToPreview,
+      meta: formSchemas[this.state.formToPreview.schemaId],
+    };
 
     return (
       <StyledApp>
@@ -64,14 +85,12 @@ class App extends React.PureComponent<{}, AppState> {
         <FormViewer
           onClose={this.handleFormPreviewClose}
           formToPreview={formToPreview}
-          formSchema={formToPreview && formSchemas[formToPreview.schemaId]}
         />
         <FormEditor
           onSave={this.handleFormSave}
           onClose={this.handleFormEditorClose}
           newForm={this.state.newForm}
           formToEdit={formToEdit}
-          formSchema={formToEdit && formSchemas[formToEdit.schemaId]}
         />
       </StyledApp>
     );

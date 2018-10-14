@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import { Card, Icon } from 'antd';
 import { Meta } from 'antd/lib/list/Item';
 
-import { FormListItem } from 'components/types';
 import { boxShadow1, boxShadow2 } from 'components/theme';
+import { FormListItem } from 'components/Form/types';
 
 export const CARD_WIDTH_PX = 300;
 
