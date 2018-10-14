@@ -69,7 +69,7 @@ class FormViewer extends React.PureComponent<FormViewerProps> {
 
         case 'file':
           return this.getDefaultFormItem(input,
-            <Upload>
+            <Upload action="">
               <Button>
                 <Icon type="upload" /> Click to Upload
               </Button>
@@ -98,6 +98,8 @@ class FormViewer extends React.PureComponent<FormViewerProps> {
 
     return (
       <Modal
+        maskClosable={false}
+        width="50%"
         destroyOnClose={true}
         onCancel={this.props.onClose}
         title={formToPreview && formToPreview.name + ' preview'}

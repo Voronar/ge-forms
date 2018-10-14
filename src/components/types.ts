@@ -1,16 +1,21 @@
 import { FormSchema } from 'components/Form/types';
 
+export type BaseFormInfo = {
+  name: 'name';
+  description: 'description';
+};
+
 export type FormListItem = {
   id: string;
   schemaId: string;
-  name: string;
-  description: string;
-};
+} & Record<keyof BaseFormInfo, string>;
 
 export type AppState = {
-  formList: FormListItem[],
+  formList: FormListItem[];
   formSchemas: Record<string, FormSchema>;
-  formToPreview: FormListItem | null,
+  formToPreview: FormListItem | null;
+  formToEdit: FormListItem | null;
+  newForm: boolean;
 };
 
 export const initialFormSchemas: Record<string, FormSchema> = {
