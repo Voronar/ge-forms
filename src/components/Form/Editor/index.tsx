@@ -7,13 +7,15 @@ import uuid from 'uuid/v1';
 import { FormEditorProps, FormEditorState, baseFormInfo } from './types';
 import FormField from './Field';
 import { FieldPanel, PanelHeader, DeleteFieldButton } from 'components/Form/Editor/styled';
-import { InputSchema } from 'components/Form/types';
-import { updateInputs } from 'components/Form/Editor/utils';
+import { InputSchema, FormListItem } from 'components/Form/types';
+import { updateInputs, validateDataObject, notifyValidationError } from 'components/Form/Editor/utils';
 
 const FormItem = Form.Item;
 const StyledFormEditor = styled.div``;
 
 class FormEditor extends React.PureComponent<FormEditorProps, FormEditorState> {
+  fieldEditForms: Record<string, Form> = {};
+
   state: FormEditorState = {
     formToEdit: null,
     visible: false,
@@ -58,6 +60,9 @@ class FormEditor extends React.PureComponent<FormEditorProps, FormEditorState> {
       this.setState({ formToEdit: null, visible: false, });
     }
   }
+  componentWillUnmount() {
+    this.fieldEditForms = {};
+  }
   handleClose = () => {
     this.setState({
       visible: false,
@@ -66,17 +71,47 @@ class FormEditor extends React.PureComponent<FormEditorProps, FormEditorState> {
     this.props.onClose();
   }
   handleSave = () => {
-    this.props.form.validateFields((err: any, values: any) => {
+    this.props.form.validateFields((err: any, values: FormListItem) => {
       if (!err) {
-        console.log('Received values of form: ', values);
-        // tslint:disable-next-line:no-unused-expression
-        this.state.formToEdit && this.props.onSave({
-          ...this.state.formToEdit,
+        const { formToEdit } = this.state;
+        if (!formToEdit) {
+          return;
+        }
+
+        const formFieldState = formToEdit.meta.inputs.map(meta => {
+          const fieldFormProps = this.fieldEditForms[meta.id].props;
+          const fieldFormMetaData = (fieldFormProps.form !== undefined && fieldFormProps.form.getFieldsValue()) || {};
+          const fieldFormMetaErrors = (fieldFormProps.form !== undefined && fieldFormProps.form.getFieldsError()) || {};
+
+          return {
+            fieldFormMetaData,
+            fieldFormMetaErrors,
+          };
+        });
+
+        const isFieldsValid = formFieldState.map(fieldForm => validateDataObject(fieldForm.fieldFormMetaErrors)).every(item => item);
+
+        if (!isFieldsValid) {
+          notifyValidationError();
+          return;
+        }
+
+        this.props.onSave({
+          ...formToEdit,
           data: {
-            ...this.state.formToEdit.data,
+            ...formToEdit.data,
             ...values,
           },
+          meta: {
+            ...formToEdit.meta,
+            inputs: formToEdit.meta.inputs.map((meta, i) => ({
+              ...meta,
+              ...formFieldState[i].fieldFormMetaData,
+            })),
+          },
         });
+      } else {
+        notifyValidationError();
       }
     });
   }
@@ -161,6 +196,8 @@ class FormEditor extends React.PureComponent<FormEditorProps, FormEditorState> {
             <FormField
               schema={input}
               onChange={this.handleFieldInfoChange}
+              // tslint:disable-next-line:jsx-no-lambda
+              wrappedComponentRef={(formComponent: Form) => this.fieldEditForms[input.id] = formComponent}
             />
           </FieldPanel>
         </Collapse>

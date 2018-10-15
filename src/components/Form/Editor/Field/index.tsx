@@ -18,11 +18,6 @@ type FormFieldProps = {
 } & FormComponentProps;
 
 class FormField extends React.PureComponent<FormFieldProps> {
-  handleValidation = () => {
-    this.props.form.validateFields((errors: any, values: any) => {
-      console.log(errors, values);
-    });
-  }
   onSelectTypeChange = (value: SelectValue) => {
     const type = value as InputSchema['type'];
 
@@ -67,7 +62,7 @@ class FormField extends React.PureComponent<FormFieldProps> {
                 message: `Please input input name`,
                 required: true,
               }],
-            })(<Input onChange={this.handleValidation} />)
+            })(<Input />)
           }
         </FormItem>
         <FormItem label="Type">

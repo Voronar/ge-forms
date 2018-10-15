@@ -46,11 +46,10 @@ class App extends React.PureComponent<{}, AppState> {
   }
 
   handleFormSave = (updatedForm: FormInfo) => {
-    console.log('save');
-    
-    // TODO проверка на новую запись
     this.setState({
-      formList: [...this.state.formList, updatedForm.data],
+      formList: this.state.newForm
+        ? [...this.state.formList, updatedForm.data]
+        : this.state.formList.map(item => item.id === updatedForm.data.id ? updatedForm.data : item),
       formSchemas: {
         ...this.state.formSchemas,
         [updatedForm.meta.id]: updatedForm.meta,
