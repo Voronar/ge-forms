@@ -2,9 +2,10 @@ import React from 'react';
 import { Form, Input, Select, Checkbox } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import styled from 'styled-components';
+import { SelectValue } from 'antd/lib/select';
+import { WrappedFormUtils } from 'antd/lib/form/Form';
 
 import { InputSchema, Option, BaseInputSchema, SelectInputSchema } from 'components/Form/types';
-import { SelectValue } from 'antd/lib/select';
 import TagGroup from 'components/Form/Editor/Field/TagGroup';
 import { inputTypes } from 'components/Form/Editor/utils';
 
@@ -15,9 +16,13 @@ const StyledFormField = styled.div``;
 type FormFieldProps = {
   schema: InputSchema;
   onChange(inputSchema: InputSchema): void;
+  extractFormRef(fieldId: string, form: WrappedFormUtils): void;
 } & FormComponentProps;
 
 class FormField extends React.PureComponent<FormFieldProps> {
+  componentDidMount() {
+    this.props.extractFormRef(this.props.schema.id, this.props.form);
+  }
   onSelectTypeChange = (value: SelectValue) => {
     const type = value as InputSchema['type'];
 

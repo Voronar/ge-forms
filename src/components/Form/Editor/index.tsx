@@ -1,20 +1,21 @@
 import React from 'react';
 import { Modal, Input, Button, Icon, Collapse } from 'antd';
 import Form from 'antd/lib/form';
+import { WrappedFormUtils } from 'antd/lib/form/Form';
 import styled from 'styled-components';
 import uuid from 'uuid/v1';
 
-import { FormEditorProps, FormEditorState, baseFormInfo } from './types';
-import FormField from './Field';
 import { FieldPanel, PanelHeader, DeleteFieldButton } from 'components/Form/Editor/styled';
 import { InputSchema, FormListItem } from 'components/Form/types';
 import { updateInputs, validateDataObject, notifyValidationError } from 'components/Form/Editor/utils';
+import { FormEditorProps, FormEditorState, baseFormInfo } from './types';
+import FormField from './Field';
 
 const FormItem = Form.Item;
 const StyledFormEditor = styled.div``;
 
 class FormEditor extends React.PureComponent<FormEditorProps, FormEditorState> {
-  fieldEditForms: Record<string, Form> = {};
+  fieldEditFormUtils: Record<string, WrappedFormUtils> = {};
 
   state: FormEditorState = {
     formToEdit: null,
@@ -61,7 +62,7 @@ class FormEditor extends React.PureComponent<FormEditorProps, FormEditorState> {
     }
   }
   componentWillUnmount() {
-    this.fieldEditForms = {};
+    this.fieldEditFormUtils = {};
   }
   handleClose = () => {
     this.setState({
@@ -79,9 +80,9 @@ class FormEditor extends React.PureComponent<FormEditorProps, FormEditorState> {
         }
 
         const formFieldState = formToEdit.meta.inputs.map(meta => {
-          const fieldFormProps = this.fieldEditForms[meta.id].props;
-          const fieldFormMetaData = (fieldFormProps.form !== undefined && fieldFormProps.form.getFieldsValue()) || {};
-          const fieldFormMetaErrors = (fieldFormProps.form !== undefined && fieldFormProps.form.getFieldsError()) || {};
+          const fieldFormUtils = this.fieldEditFormUtils[meta.id];
+          const fieldFormMetaData = (fieldFormUtils !== undefined && fieldFormUtils.getFieldsValue()) || {};
+          const fieldFormMetaErrors = (fieldFormUtils !== undefined && fieldFormUtils.getFieldsError()) || {};
 
           return {
             fieldFormMetaData,
@@ -156,6 +157,9 @@ class FormEditor extends React.PureComponent<FormEditorProps, FormEditorState> {
       )),
     });
   }
+  handleExtractFormRef = (id: string, formUtils: WrappedFormUtils) => {
+    this.fieldEditFormUtils[id] = formUtils;
+  }
   render () {
     const { newForm } = this.props;
     const { formToEdit } = this.state;
@@ -196,8 +200,9 @@ class FormEditor extends React.PureComponent<FormEditorProps, FormEditorState> {
             <FormField
               schema={input}
               onChange={this.handleFieldInfoChange}
+              extractFormRef={this.handleExtractFormRef}
               // tslint:disable-next-line:jsx-no-lambda
-              wrappedComponentRef={(formComponent: Form) => this.fieldEditForms[input.id] = formComponent}
+              // wrappedComponentRef={(formComponent: Form) => this.fieldEditFormUtils[input.id] = formComponent}
             />
           </FieldPanel>
         </Collapse>
